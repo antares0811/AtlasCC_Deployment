@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Liver Tumor Segmentation</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="\bootstrap-5.3.3-dist\bootstrap-5.3.3-dist\css\bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      .image-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        margin-top: 20px;
+      }
+      .image-container img {
+        display: block;
+        margin: auto;
+      }
+      .image-container {
+        text-align: center;
+        width: 50%; /* Adjust width for equal spacing */
+      }
+    </style>
+
+  </head>
+
+  <body class="text-center">
+    <form class="form-upload" method="post" enctype="multipart/form-data">
+      <h1 class="h3 mb-3 font-weight-normal">Please upload image</h1>
+      <input type="file" id="image" name="image" class="form-control" required autofocus>
+      <h1 class="h3 mb-3 font-weight-normal">Please upload ground-truth</h1>
+      <input type="file" id="gt" name="gt" class="form-control" autofocus>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Predict</button>
+      <br>
+    </form>
+
+    {% if img_slices and pred_slices%}
+    <div class="image-row">
+      <div class="image-container">
+        <h3>Original Image</h3>
+        <img id="original-image" class="mb-4" src="data:image/png;base64,{{ img_slices[0] }}" alt="Slice 0" width="256" height="256">
+      </div>
+      
+      {% if gt_slices %}
+        <div class="image-container">
+          <h3>Grouth Truth</h3>
+          <img id="ground-truth" class="mb-4" src="data:image/png;base64,{{ pred_slices[0] }}" alt="Slice 0" width="256" height="256">
+        </div>
+      {% endif %}
+
+      <div class="image-container">
+        <h3>Predicted Label</h3>
+        <img id="predicted-image" class="mb-4" src="data:image/png;base64,{{ pred_slices[0] }}" alt="Slice 0" width="256" height="256">
+      </div>
+
+    </div>
+
+    <div>
+      <input type="range" id="slice-slider" min="0" max="{{ img_slices|length - 1 }}" value="0" step="1" oninput="updateSlices()">
+    </div>
+
+    <script>
+      const imgSlices = {{ img_slices|tojson }};
+      const predSlices = {{ pred_slices|tojson }};
+      {% if gt_slices %}
+        const gtSlices = {{ gt_slices|tojson }};
+      {% endif %}
+
+      function updateSlices() {
+        const slider = document.getElementById("slice-slider");
+        const originalImage = document.getElementById("original-image");
+        {% if gt_slices %}
+          const grouthTruth = document.getElementById("ground-truth");
+        {% endif %}
+        const predictedImage = document.getElementById("predicted-image");
+        const sliceIndex = slider.value;
+
+        originalImage.src = `data:image/png;base64,${imgSlices[sliceIndex]}`;
+        {% if gt_slices %}
+          grouthTruth.src = `data:image/png;base64,${gtSlices[sliceIndex]}`;
+        {% endif %}
+        predictedImage.src = `data:image/png;base64,${predSlices[sliceIndex]}`;
+      }
+    </script>
+    {% endif %}
+  </body>
+</html>
