@@ -1,4 +1,5 @@
-# The STU-Net Docker Container
+# Our Proposed nnUnet-based Framework Docker Container
+Thanh-Huy Nguyen et.al. (Universite de Bourgogne Europe)
 
 This repository contains a Dockerfile for building a containerized environment to run STU-Net inference on medical images.
 
